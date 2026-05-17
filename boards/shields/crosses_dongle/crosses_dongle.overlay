@@ -31,7 +31,13 @@
     chosen {
         zmk,kscan = &mock_kscan;
         zmk,physical-layout = &gggw_crosses_36_layout;
-        zmk,matrix-transform = &thirty_six_transform;
+        /*
+         * Intentionally NOT setting zmk,matrix-transform here. ZMK Studio
+         * requires the transform to be sourced from the physical layout node
+         * (via its `transform` property below); the presence of a chosen
+         * `zmk,matrix-transform` makes USE_PHY_LAYOUTS evaluate false and
+         * trips the Studio "additional configuration required" assertion.
+         */
     };
 
     /* Matrix transform mirroring upstream crosses.dtsi's thirty_six_transform
