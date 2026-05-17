@@ -1,9 +1,14 @@
 /*
  * Crosses 36 — XIAO BLE dongle (central)
  *
- * No physical keys; receives key + trackball events from both halves over BLE.
- * Chains the temp-layer input processor on the right-trackball listener so the
- * mouse layer activates on right-ball movement and auto-drops after 750 ms.
+ * No physical keys. Receives key + trackball events from the two halves
+ * over BLE. Declares the 36-key physical layout locally so that ZMK Studio
+ * can render and edit this keymap over the dongle's USB.
+ *
+ * Layout / position-map sources copied from gggw-zmk-keebs at the
+ * `zephyr-4.1` revision (boards/shields/crosses/{thirty_six_layout,
+ * position_map}.dtsi). The geometry is fixed by the physical PCB, so
+ * drift risk is minimal.
  */
 
 #include <dt-bindings/zmk/matrix_transform.h>
@@ -11,34 +16,45 @@
 #include <input/processors.dtsi>
 #include <input/processors/report_rate_limit.dtsi>
 
-/*
- * Keep DONGLE_LAYER_MOUSE in sync with the `mouse_layer` index in
- * config/crosses.keymap (currently layer 3 — 0=base, 1=lower, 2=raise, 3=mouse).
- */
+#include "position_map.dtsi"
+#include "thirty_six_layout.dtsi"
+
+/* Keep DONGLE_LAYER_MOUSE in sync with the `mouse_layer` index in
+ * config/crosses.keymap (currently 3 — 0=base, 1=lower, 2=raise, 3=mouse). */
 #define DONGLE_LAYER_MOUSE 3
+
+&gggw_crosses_36_layout {
+    transform = <&thirty_six_transform>;
+};
 
 / {
     chosen {
         zmk,kscan = &mock_kscan;
-        zmk,matrix-transform = &dongle_transform;
+        zmk,physical-layout = &gggw_crosses_36_layout;
+        zmk,matrix-transform = &thirty_six_transform;
     };
 
-    /*
-     * ZMK requires a kscan node even on a keyless central. A zero-row/col
-     * mock kscan satisfies that without consuming GPIO.
-     */
+    /* Matrix transform mirroring upstream crosses.dtsi's thirty_six_transform
+     * so split-peripheral key events on the central map to the same keymap
+     * positions the peripherals scan into. */
+    thirty_six_transform: keymap_transform_dongle {
+        compatible = "zmk,matrix-transform";
+        columns = <12>;
+        rows = <5>;
+        map = <
+            RC(1,1) RC(1,2) RC(1,3) RC(1,4) RC(1,5)   RC(1,6) RC(1,7) RC(1,8) RC(1,9) RC(1,10)
+            RC(2,1) RC(2,2) RC(2,3) RC(2,4) RC(2,5)   RC(2,6) RC(2,7) RC(2,8) RC(2,9) RC(2,10)
+            RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5)   RC(3,6) RC(3,7) RC(3,8) RC(3,9) RC(3,10)
+                            RC(4,3) RC(4,4) RC(4,5)   RC(4,6) RC(4,7) RC(4,8)
+        >;
+    };
+
+    /* Keyless central still requires a kscan chosen by ZMK. */
     mock_kscan: kscan_mock {
         compatible = "zmk,kscan-mock";
         columns = <0>;
         rows = <0>;
         events = <0>;
-    };
-
-    dongle_transform: keymap_transform_dongle {
-        compatible = "zmk,matrix-transform";
-        columns = <1>;
-        rows = <1>;
-        map = < RC(0,0) >;
     };
 
     /* Split inputs received from the two peripherals (left=0, right=1). */
