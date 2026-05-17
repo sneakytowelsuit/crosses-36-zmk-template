@@ -1,0 +1,33 @@
+/*
+ * Right half as a peripheral under the dongle.
+ *
+ * Upstream crosses_right wires the trackball as a central-local input (the
+ * right half was the central in the dongle-less setup). When the dongle is
+ * central, the right ball must be published over BLE instead — so we:
+ *
+ *   1. Disable the upstream `trackball_central_listener` (it would otherwise
+ *      try to consume the trackball locally on the peripheral).
+ *   2. Add a new input-split node (reg=1) and point it at the local
+ *      `trackball_central` device, mirroring how the left half's
+ *      `trackball_peripheral_split` (reg=0) publishes the left ball.
+ */
+
+&trackball_central_listener {
+    status = "disabled";
+};
+
+/ {
+    chosen { zmk,physical-layout = &gggw_crosses_36_layout; };
+
+    split_inputs {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        trackball_right_split: trackball_right_split@1 {
+            compatible = "zmk,input-split";
+            reg = <1>;
+            device = <&trackball_central>;
+            input-processors = <&zip_ble_report_rate_limit>;
+        };
+    };
+};

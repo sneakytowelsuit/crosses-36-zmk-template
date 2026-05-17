@@ -1,0 +1,11 @@
+if SHIELD_CROSSES_LEFT_DONGLE
+
+config ZMK_KEYBOARD_NAME
+    default "Crosses L"
+
+# Override the upstream shield's role: left becomes a non-central peripheral
+# when the dongle is the central.
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
+
+endif

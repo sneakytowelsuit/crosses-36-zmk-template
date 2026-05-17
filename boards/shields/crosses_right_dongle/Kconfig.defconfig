@@ -1,0 +1,10 @@
+if SHIELD_CROSSES_RIGHT_DONGLE
+
+config ZMK_KEYBOARD_NAME
+    default "Crosses R"
+
+# Override the upstream right shield's central role.
+config ZMK_SPLIT_ROLE_CENTRAL
+    default n
+
+endif

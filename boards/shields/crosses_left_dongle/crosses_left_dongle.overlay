@@ -1,0 +1,16 @@
+/*
+ * Left half as a pure peripheral under the dongle.
+ *
+ * The upstream crosses_left overlay already publishes its trackball through
+ * `trackball_peripheral_split` (reg=0) with the scroll-mapper chain, so all
+ * we need to do here is enable it. SHIELD_CROSSES_LEFT being def_bool'd on
+ * pulls in the upstream overlay automatically.
+ */
+
+/ {
+    chosen { zmk,physical-layout = &gggw_crosses_36_layout; };
+};
+
+&trackball_peripheral_split {
+    status = "okay";
+};
