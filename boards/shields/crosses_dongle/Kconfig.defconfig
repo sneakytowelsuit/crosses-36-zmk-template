@@ -9,10 +9,17 @@ config ZMK_SPLIT
 config ZMK_SPLIT_ROLE_CENTRAL
     default y
 
+# Two physical halves => the central must explicitly accept two peripheral
+# slots. ZMK leaves this symbol with no default; without it, only the half
+# that bonds first survives and the other is silently rejected.
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+    default 2
+
+# 2 peripherals + 5 BT host profiles (ZMK convention).
 config BT_MAX_CONN
-    default 6
+    default 7
 
 config BT_MAX_PAIRED
-    default 6
+    default 7
 
 endif
