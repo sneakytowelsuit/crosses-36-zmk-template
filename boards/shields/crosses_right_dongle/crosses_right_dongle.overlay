@@ -16,6 +16,16 @@
     status = "disabled";
 };
 
+/*
+ * The upstream crosses.dtsi declares `trackball_peripheral_split@0` (for
+ * publishing the LEFT half's ball over BLE). It's irrelevant on the right
+ * half, but having a peripheral input-split with no `device`/`input` now
+ * that the right is itself a peripheral fails a static assertion. Park it.
+ */
+&trackball_peripheral_split {
+    status = "disabled";
+};
+
 / {
     chosen { zmk,physical-layout = &gggw_crosses_36_layout; };
 
