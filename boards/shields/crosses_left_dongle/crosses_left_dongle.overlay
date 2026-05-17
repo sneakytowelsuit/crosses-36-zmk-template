@@ -14,3 +14,15 @@
 &trackball_peripheral_split {
     status = "okay";
 };
+
+/*
+ * Force the left half's matrix transform to col-offset=0. Each peripheral
+ * runs its OWN matrix transform locally and forwards the computed keymap
+ * position (an integer) to the central — the central does not re-offset.
+ * Upstream `crosses_left.overlay` doesn't set col-offset explicitly; setting
+ * it here removes any ambiguity and guarantees left positions don't collide
+ * with the right's col-offset=6 region.
+ */
+&thirty_six_transform {
+    col-offset = <0>;
+};
